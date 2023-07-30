@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import { parseHtml, findInRangeHtml, HtmlParse2Document } from "../util/parse";
+import {  RootNode,ElementNode } from "@vue/compiler-core";
+import { parseHtml, findInRangeHtml } from "../util/parse";
 import { createCommand } from "../util/createCommand";
 
 export class HtmlFix implements vscode.CodeActionProvider {
-  declare parseDomAst: HtmlParse2Document | null;
+  declare parseDomAst: RootNode | null;
 
   public static readonly providedCodeActionKinds = [
     vscode.CodeActionKind.QuickFix,
@@ -49,21 +50,18 @@ export class HtmlFix implements vscode.CodeActionProvider {
         this.createFix(document, node, "button"),
         this.createFix(document, node, "span"),
       ];
-      if (node.children) {
+      if (node.children && node.children.length) {
         fix.push(this.createRemoveCommand(document, node));
       }
       return fix;
     }
   }
 
-  private createRemoveCommand(
-    document: vscode.TextDocument,
-    node: HtmlParse2Document
-  ) {
+  private createRemoveCommand(document: vscode.TextDocument, node: ElementNode) {
     const lastChildrenIndex =
       node.children.length === 1 ? 0 : node.children.length - 1;
-    const startIndex = node.children[0].startIndex!;
-    const endIndex = node.children[lastChildrenIndex].endIndex!;
+    const startIndex = node.children[0].loc.start.offset!;
+    const endIndex = node.children[lastChildrenIndex].loc.end.offset!;
     const content = document.getText().slice(startIndex!, endIndex! + 1);
     const fix = createCommand(document, node, {
       content,
@@ -73,12 +71,11 @@ export class HtmlFix implements vscode.CodeActionProvider {
   }
   private createFix(
     document: vscode.TextDocument,
-    node: HtmlParse2Document,
+    node: ElementNode,
     tag: string
   ): vscode.CodeAction {
-    const content = document
-      .getText()
-      .slice(node.startIndex!, node.endIndex! + 1);
+    const { start, end } = node.loc;
+    const content = document.getText().slice(start.offset!, end.offset! + 1);
     const fix = createCommand(document, node, {
       content: `<${tag}>
       ${content}

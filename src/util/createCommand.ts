@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HtmlParse2Document } from "./parse";
+import { ElementNode } from "@vue/compiler-core";
 interface CreateCommandOptions {
   actionName: string;
   content: string;
@@ -7,7 +7,7 @@ interface CreateCommandOptions {
 
 export function createCommand(
   document: vscode.TextDocument,
-  node: HtmlParse2Document,
+  node: ElementNode,
   options: CreateCommandOptions
 ) {
   const fix = new vscode.CodeAction(
@@ -19,8 +19,8 @@ export function createCommand(
   fix.edit.replace(
     document.uri,
     new vscode.Range(
-      document.positionAt(node.startIndex!),
-      document.positionAt(node.endIndex! + 1)
+      document.positionAt(node.loc.start.offset!),
+      document.positionAt(node.loc.end.offset! + 1)
     ),
     options.content
   );

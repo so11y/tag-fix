@@ -1,40 +1,38 @@
-import { parseDocument } from "htmlparser2";
+import { baseParse, ElementNode,RootNode } from "@vue/compiler-core";
 
 const igNoreTag = ["script", "style"];
 
-export type HtmlParse2Document = ReturnType<typeof parseDocument>;
 
 export function parseHtml(domString: string) {
-  return parseDocument(domString, {
-    withStartIndices: true,
-    withEndIndices: true,
+  return baseParse(domString, {
+    onError: () => {},
+    onWarn: () => {},
   });
 }
 
 export function findInRangeHtml(
-  document: HtmlParse2Document,
+  document: RootNode,
   start: number,
   end?: number
-) {
+):ElementNode | undefined {
   end === undefined ? (end = start) : end;
-  let findNode: HtmlParse2Document | undefined;
-  const walk = (nodes: Array<HtmlParse2Document>) => {
+  let findNode: ElementNode | undefined;
+  let parentNode: ElementNode | undefined;
+  const walk = (nodes: Array<ElementNode>) => {
     nodes.forEach((node) => {
-      if (node.startIndex! <= start) {
+      const startIndex = node.loc.start.offset;
+      if (startIndex! <= start) {
+        parentNode = findNode;
         findNode = node;
       }
-      if (node.children && node.startIndex! <= start) {
-        walk(node.children as Array<HtmlParse2Document>);
+      if (node.children && startIndex! <= start) {
+        walk(node.children as Array<ElementNode>);
       }
     });
   };
-  walk(document.children as Array<HtmlParse2Document>);
-  if (
-    findNode &&
-    findNode.parentNode &&
-    igNoreTag.includes(findNode.parentNode.type)
-  ) {
-    return null;
+  walk(document.children as Array<ElementNode>);
+  if(parentNode && igNoreTag.includes(parentNode.tag)){
+    return undefined;
   }
   return findNode;
 }

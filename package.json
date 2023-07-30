@@ -2,7 +2,7 @@
   "name": "fix-tag-fix",
   "displayName": "fix-tag",
   "description": "fix-tag",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "publisher": "zrrz",
   "author": {
@@ -36,9 +36,10 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "htmlparser2": "^9.0.0"
+    "@vue/compiler-core": "^3.3.4"
   },
   "devDependencies": {
+    "@babel/types": "^7.22.5",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
@@ -49,6 +50,7 @@
     "eslint": "^8.39.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
+    "parse5": "^7.1.2",
     "typescript": "^5.0.4"
   }
 }
