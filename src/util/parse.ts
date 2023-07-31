@@ -16,23 +16,24 @@ export function findInRangeHtml(
   end?: number
 ):ElementNode | undefined {
   end === undefined ? (end = start) : end;
-  let findNode: ElementNode | undefined;
-  let parentNode: ElementNode | undefined;
+  const nodePaths:Array<ElementNode>  = [];
   const walk = (nodes: Array<ElementNode>) => {
     nodes.forEach((node) => {
       const startIndex = node.loc.start.offset;
-      if (startIndex! <= start) {
-        parentNode = findNode;
-        findNode = node;
+      const endIndex = node.loc.end.offset;
+      if (startIndex! <= start  && endIndex >= start) {
+        nodePaths.push(node);
       }
       if (node.children && startIndex! <= start) {
         walk(node.children as Array<ElementNode>);
       }
     });
   };
+
   walk(document.children as Array<ElementNode>);
-  if(parentNode && igNoreTag.includes(parentNode.tag)){
+  const lastNode = nodePaths.pop();
+  if(nodePaths.some((node)=>igNoreTag.includes(node.tag))){
     return undefined;
   }
-  return findNode;
+  return lastNode;
 }
