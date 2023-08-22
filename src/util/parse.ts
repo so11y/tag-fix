@@ -24,7 +24,7 @@ export function findInRangeHtml(
         return;
       }
       nodePaths.push(node);
-      if (node.children) {
+      if (node?.children) {
         walk(node.children as Array<ElementNode>);
       }
     });

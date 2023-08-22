@@ -47,8 +47,6 @@ export class HtmlFix implements vscode.CodeActionProvider {
     if (node) {
       const fix = [
         this.createFix(document, node, "div"),
-        this.createFix(document, node, "button"),
-        this.createFix(document, node, "span"),
       ];
       if (node.children && node.children.length) {
         fix.push(this.createRemoveCommand(document, node));
