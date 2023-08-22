@@ -78,7 +78,7 @@ export class HtmlFix implements vscode.CodeActionProvider {
       content: `<${tag}>
       ${content}
       </${tag}>`,
-      actionName: `warp ${tag}`,
+      actionName: `wrap ${tag}`,
     });
     return fix;
   }
