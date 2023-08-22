@@ -25,12 +25,12 @@ export function findInRangeHtml(
       }
       nodePaths.push(node);
       if (node?.children) {
-        walk(node.children as Array<ElementNode>);
+        walk(node?.children as Array<ElementNode> || []);
       }
     });
   };
 
-  walk(document.children as Array<ElementNode>);
+  walk(document?.children as Array<ElementNode> || []);
   const lastNode = nodePaths.pop();
   if (nodePaths.some((node) => igNoreTag.includes(node.tag))) {
     return undefined;
