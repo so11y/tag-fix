@@ -75,12 +75,8 @@ export class HtmlFix implements vscode.CodeActionProvider {
     document: vscode.TextDocument,
     node: ElementNode
   ) {
-    const { loc } = node;
-    const content = document
-      .getText()
-      .slice(loc.start.offset!, loc.end.offset! + 1);
     const fix = createCommand(document, node, {
-      content,
+      content:"",
       actionName: `remove tag`,
     });
     return fix;
