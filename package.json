@@ -2,7 +2,7 @@
   "name": "fix-tag-fix",
   "displayName": "fix-tag",
   "description": "一键包裹和删除指定标签",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "license": "MIT",
   "publisher": "zrrz",
   "author": {

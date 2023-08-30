@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import {  RootNode,ElementNode } from "@vue/compiler-core";
+import { RootNode, ElementNode } from "@vue/compiler-core";
 import { parseHtml, findInRangeHtml } from "../util/parse";
 import { createCommand } from "../util/createCommand";
 
@@ -45,22 +45,40 @@ export class HtmlFix implements vscode.CodeActionProvider {
       document.offsetAt(range.start)
     );
     if (node) {
-      const fix = [
-        this.createFix(document, node, "div"),
-      ];
+      const fix = [this.createFix(document, node, "div")];
       if (node.children && node.children.length) {
-        fix.push(this.createRemoveCommand(document, node));
+        fix.push(
+          this.createRemoveCommand(document, node),
+          this.createRemoveAllCommand(document, node),
+        );
       }
       return fix;
     }
   }
 
-  private createRemoveCommand(document: vscode.TextDocument, node: ElementNode) {
+  private createRemoveCommand(
+    document: vscode.TextDocument,
+    node: ElementNode
+  ) {
     const lastChildrenIndex =
       node.children.length === 1 ? 0 : node.children.length - 1;
     const startIndex = node.children[0].loc.start.offset!;
     const endIndex = node.children[lastChildrenIndex].loc.end.offset!;
     const content = document.getText().slice(startIndex!, endIndex! + 1);
+    const fix = createCommand(document, node, {
+      content,
+      actionName: `only remove tag`,
+    });
+    return fix;
+  }
+  private createRemoveAllCommand(
+    document: vscode.TextDocument,
+    node: ElementNode
+  ) {
+    const { loc } = node;
+    const content = document
+      .getText()
+      .slice(loc.start.offset!, loc.end.offset! + 1);
     const fix = createCommand(document, node, {
       content,
       actionName: `remove tag`,
