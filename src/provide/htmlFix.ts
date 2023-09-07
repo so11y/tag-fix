@@ -39,21 +39,52 @@ export class HtmlFix implements vscode.CodeActionProvider {
     document: vscode.TextDocument,
     range: vscode.Range
   ): vscode.CodeAction[] | undefined {
+    const userConfig: Array<string> = vscode.workspace
+      .getConfiguration()
+      .get("fix-tag")! || ["div"];
     const parseDocumentAst = this.getParsedDomAst(document.getText())!;
     const node = findInRangeHtml(
       parseDocumentAst,
       document.offsetAt(range.start)
     );
     if (node) {
-      const fix = [this.createFix(document, node, "div")];
+      const fix = [
+        ...userConfig.map((key) => this.createFix(document, node, key)),
+        this.createRemoveAllCommand(document, node),
+        this.getCustomTag(document, node),
+      ];
       if (node.children && node.children.length) {
-        fix.push(
-          this.createRemoveCommand(document, node),
-          this.createRemoveAllCommand(document, node),
-        );
+        fix.push(this.createRemoveCommand(document, node));
       }
       return fix;
     }
+  }
+  private getCustomTag(document: vscode.TextDocument, node: ElementNode) {
+    const fix = new vscode.CodeAction(
+      "custom tag",
+      vscode.CodeActionKind.RefactorRewrite
+    );
+    fix.isPreferred = true;
+    function callback(tag: string) {
+      const editor = vscode.window.activeTextEditor;
+      const { start, end } = node.loc;
+      const content = document.getText().slice(start.offset!, end.offset! + 1);
+      editor?.edit((editBuilder) => {
+        editBuilder.replace(
+          new vscode.Range(
+            document.positionAt(node.loc.start.offset!),
+            document.positionAt(node.loc.end.offset! + 1)
+          ),
+          `<${tag}>${content}</${tag}>`
+        );
+      });
+    }
+    fix.command = {
+      title: "custom tag",
+      command: "tag-custom",
+      arguments: [callback],
+    };
+    return fix;
   }
 
   private createRemoveCommand(
@@ -76,7 +107,7 @@ export class HtmlFix implements vscode.CodeActionProvider {
     node: ElementNode
   ) {
     const fix = createCommand(document, node, {
-      content:"",
+      content: "",
       actionName: `remove tag`,
     });
     return fix;
@@ -89,9 +120,7 @@ export class HtmlFix implements vscode.CodeActionProvider {
     const { start, end } = node.loc;
     const content = document.getText().slice(start.offset!, end.offset! + 1);
     const fix = createCommand(document, node, {
-      content: `<${tag}>
-      ${content}
-      </${tag}>`,
+      content: `<${tag}>${content}</${tag}>`,
       actionName: `wrap ${tag}`,
     });
     return fix;

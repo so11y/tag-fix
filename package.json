@@ -2,7 +2,7 @@
   "name": "fix-tag-fix",
   "displayName": "fix-tag",
   "description": "一键包裹和删除指定标签",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "publisher": "zrrz",
   "author": {
@@ -30,7 +30,26 @@
     "type": "git",
     "url": "git+https://github.com/so11y/tag-fix"
   },
-  "contributes": {},
+  "contributes": {
+    "commands": [
+      {
+        "command": "tag-custom",
+        "title": "fix-tag"
+      }
+    ],
+    "configuration": {
+      "title": "tag-fix",
+      "properties": {
+        "zrrz.key-bings-combo": {
+          "type": "array",
+          "description": "tag-custom",
+          "default": [
+            "dev"
+          ]
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -p ./",
