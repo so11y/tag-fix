@@ -2,7 +2,7 @@
   "name": "fix-tag-fix",
   "displayName": "fix-tag",
   "description": "一键包裹和删除指定标签",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "license": "MIT",
   "publisher": "zrrz",
   "author": {
@@ -38,9 +38,9 @@
       }
     ],
     "configuration": {
-      "title": "tag-fix",
+      "title": "fix-tag",
       "properties": {
-        "zrrz.key-bings-combo": {
+        "tag-custom": {
           "type": "array",
           "description": "tag-custom",
           "default": [
