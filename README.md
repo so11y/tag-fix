@@ -8,7 +8,7 @@
 2. 触发快速修复：使用快捷键或右键单击，选择“快速修复”选项，插件将会自动为你套一层组件,默认vscode快捷键为
   `cmd + .` or `ctrl + .`。
 
-3. 可以在`setting.json`中寻找到`tag-fix`进行修改默认`tag`。
+3. 可以在`setting.json`中寻找到`fix-tag`进行修改默认`tag`。
 
 
 ## 注意
