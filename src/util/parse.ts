@@ -1,39 +1,37 @@
-import { baseParse, ElementNode, RootNode } from "@vue/compiler-core";
+import { TextDocument, Range, DocumentSymbol } from "vscode";
 
-const igNoreTag = ["script", "style"];
-
-export function parseHtml(domString: string) {
-  return baseParse(domString, {
-    onError: () => {},
-    onWarn: () => {},
-  });
+export function findInRangeTag(
+  roots: DocumentSymbol,
+  range: Range
+): undefined | DocumentSymbol {
+  const walk = (nodes: Array<DocumentSymbol>): undefined | DocumentSymbol => {
+    for (const node of nodes) {
+      if (node.children) {
+        const v = walk(node.children);
+        if (v) {
+          return v;
+        }
+      }
+      if (node.range.contains(range)) {
+        return node;
+      }
+    }
+  };
+  return walk([roots]);
 }
 
-export function findInRangeHtml(
-  document: RootNode,
-  start: number,
-  end?: number
-): ElementNode | undefined {
-  end === undefined ? (end = start) : end;
-  const nodePaths: Array<ElementNode> = [];
-  const walk = (nodes: Array<ElementNode>) => {
-    nodes.forEach((node) => {
-      const startIndex = node.loc.start.offset;
-      const endIndex = node.loc.end.offset;
-      if (!(startIndex <= start && endIndex >= start)) {
-        return;
-      }
-      nodePaths.push(node);
-      if (node?.children) {
-        walk(node?.children as Array<ElementNode> || []);
-      }
-    });
-  };
-
-  walk(document?.children as Array<ElementNode> || []);
-  const lastNode = nodePaths.pop();
-  if (nodePaths.some((node) => igNoreTag.includes(node.tag))) {
-    return undefined;
+export function getRootCodeActionTag(
+  document: TextDocument,
+  range: Range,
+  symbols: DocumentSymbol[]
+) {
+  if (document.languageId === "vue") {
+    const hasTemplate = symbols.find((v) => v.name.includes("template"));
+    if (hasTemplate?.range.contains(range)) {
+      return hasTemplate;
+    }
+    return null;
   }
-  return lastNode;
+  if (document.languageId === "html") {
+  }
 }

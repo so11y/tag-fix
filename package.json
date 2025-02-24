@@ -2,7 +2,7 @@
   "name": "fix-tag-fix",
   "displayName": "fix-tag",
   "description": "一键包裹和删除指定标签",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "publisher": "zrrz",
   "author": {
@@ -58,9 +58,7 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
-  "dependencies": {
-    "@vue/compiler-core": "^3.3.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/types": "^7.22.5",
     "@types/glob": "^8.1.0",
