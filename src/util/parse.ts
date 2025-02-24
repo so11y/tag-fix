@@ -1,7 +1,7 @@
 import { TextDocument, Range, DocumentSymbol } from "vscode";
 
 export function findInRangeTag(
-  roots: DocumentSymbol,
+  roots: DocumentSymbol[],
   range: Range
 ): undefined | DocumentSymbol {
   const walk = (nodes: Array<DocumentSymbol>): undefined | DocumentSymbol => {
@@ -17,7 +17,7 @@ export function findInRangeTag(
       }
     }
   };
-  return walk([roots]);
+  return walk(roots);
 }
 
 export function getRootCodeActionTag(
@@ -28,10 +28,10 @@ export function getRootCodeActionTag(
   if (document.languageId === "vue") {
     const hasTemplate = symbols.find((v) => v.name.includes("template"));
     if (hasTemplate?.range.contains(range)) {
-      return hasTemplate;
+      return [hasTemplate];
     }
-    return null;
   }
   if (document.languageId === "html") {
+    return symbols;
   }
 }

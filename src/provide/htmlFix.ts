@@ -7,8 +7,7 @@ import {
   DocumentSymbol,
   commands,
   CodeAction,
-  WorkspaceEdit,
-  workspace
+  WorkspaceEdit
 } from "vscode";
 import { findInRangeTag, getRootCodeActionTag } from "../util/parse";
 
@@ -29,25 +28,25 @@ export class HtmlFix implements CodeActionProvider {
         return null;
       }
 
-      const rootTag = getRootCodeActionTag(document, range, symbols);
-      if (!rootTag) {
+      const rootTags = getRootCodeActionTag(document, range, symbols);
+      if (!rootTags) {
         return;
       }
 
-      const tag = findInRangeTag(rootTag, range);
+      const tag = findInRangeTag(rootTags, range);
 
       if (!tag) {
         return;
       }
 
       const fix = [
-        this.removeTag(document, tag),
-        this.emmetAction("close/join tag", "editor.emmet.action.splitJoinTag"),
-        this.emmetAction("remove only tag", "editor.emmet.action.removeTag"),
         this.emmetAction(
           "surround tag",
           "editor.emmet.action.wrapWithAbbreviation"
-        )
+        ),
+        this.removeTag(document, tag),
+        this.emmetAction("remove only tag", "editor.emmet.action.removeTag"),
+        this.emmetAction("close/join tag", "editor.emmet.action.splitJoinTag")
       ];
       return fix;
     }
